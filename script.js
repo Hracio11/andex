@@ -1,0 +1,129 @@
+document.addEventListener('DOMContentLoaded', () => {
+
+    // Modal de Bootstrap
+    const modal = new bootstrap.Modal(document.getElementById('cart-modal'));
+
+    let cart = [];
+    const cartItemsContainer = document.getElementById('cart-items');
+    const cartTotalDisplay = document.getElementById('cart-total-price');
+    const cartCountDisplay = document.getElementById('cart-count');
+
+    const cartButton = document.getElementById('cart-button');
+    const checkoutButton = document.getElementById('checkout-whatsapp');
+
+    // Número para WhatsApp
+    const companyPhoneNumber = '51928074581';
+
+    // ================================
+    // FUNCIONES DEL CARRITO
+    // ================================
+
+    const renderCart = () => {
+        cartItemsContainer.innerHTML = '';
+        let total = 0;
+
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = '<p>El carrito está vacío.</p>';
+        } else {
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+
+                const div = document.createElement('div');
+                div.classList.add("d-flex", "justify-content-between", "align-items-center", "border-bottom", "py-2");
+
+                div.innerHTML = `
+                    <span>${item.name} (x${item.quantity})</span>
+                    <span>
+                        $${itemTotal.toFixed(2)}
+                        <button class="btn btn-sm btn-danger remove-item-btn" data-name="${item.name}">X</button>
+                    </span>
+                `;
+
+                cartItemsContainer.appendChild(div);
+            });
+        }
+
+        cartTotalDisplay.textContent = `$${total.toFixed(2)}`;
+        cartCountDisplay.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+    };
+
+    const addToCart = (name, price) => {
+        const existing = cart.find(item => item.name === name);
+
+        if (existing) {
+            existing.quantity++;
+        } else {
+            cart.push({ name, price, quantity: 1 });
+        }
+
+        renderCart();
+    };
+
+    const removeItem = (name) => {
+        const index = cart.findIndex(item => item.name === name);
+
+        if (index > -1) {
+            cart[index].quantity--;
+
+            if (cart[index].quantity === 0) {
+                cart.splice(index, 1);
+            }
+        }
+        renderCart();
+    };
+
+    // ================================
+    // EVENTOS
+    // ================================
+
+    // Abrir modal con Bootstrap
+    cartButton.addEventListener('click', () => {
+        modal.show();
+    });
+
+    // Botones añadir al carrito
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const name = btn.dataset.name;
+            const price = parseFloat(btn.dataset.price);
+
+            addToCart(name, price);
+        });
+    });
+
+    // ELIMINAR ITEM desde el modal
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('remove-item-btn')) {
+            const name = event.target.dataset.name;
+            removeItem(name);
+        }
+    });
+
+    // BOTÓN WHATSAPP
+    checkoutButton.addEventListener('click', () => {
+        if (cart.length === 0) {
+            alert("Tu carrito está vacío");
+            return;
+        }
+
+        let msg = "¡Hola! Quiero hacer el siguiente pedido:%0A%0A";
+
+        cart.forEach(item => {
+            msg += `- ${item.name}: ${item.quantity} unidad(es) ($${(item.price * item.quantity).toFixed(2)})%0A`;
+        });
+
+        msg += `%0ATOTAL: $${cart.reduce((t, i) => t + i.price * i.quantity, 0).toFixed(2)}%0A`;
+        msg += "¡Espero su confirmación!";
+
+        const url = `https://wa.me/${companyPhoneNumber}?text=${msg}`;
+
+        window.open(url, "_blank"); // ✔ FUNCIONA AHORA
+
+        modal.hide();
+        cart = [];
+        renderCart();
+    });
+
+    renderCart();
+});

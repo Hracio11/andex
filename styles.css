@@ -41,7 +41,8 @@ body {
     gap: 10px;
 }
 
-.logo img {
+/* Logo dentro de .navbar-brand */
+.navbar-brand .logo-img {
     display: block;
     max-height: 48px;
     width: auto;
@@ -427,7 +428,25 @@ body {
 }
 
 .modal-header .modal-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     font-weight: 700;
+}
+
+/* Logo pequeño al lado del título del modal */
+.modal-logo {
+    height: 36px;
+    width: auto;
+}
+
+@media (max-width: 576px) {
+    .modal-logo {
+        height: 28px;
+    }
+    .modal-header .modal-title {
+        font-size: 1.05rem;
+    }
 }
 
 #cart-items {
@@ -522,6 +541,39 @@ body {
 .tiktok-icon:hover {
     transform: scale(1.06);
     color: #ff0050;
+}
+
+/* ====== TOAST NOTIFICATION ====== */
+.toast-notification {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    background: rgba(0,0,0,0.9);
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    transform: translateY(-8px) scale(0.98);
+    opacity: 0;
+    transition: opacity .28s ease, transform .28s ease;
+    z-index: 2000;
+    font-weight: 600;
+}
+
+.toast-notification.visible {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+@media (max-width: 576px) {
+    .toast-notification {
+        right: 12px;
+        left: 12px;
+        top: 12px;
+        border-radius: 6px;
+        padding: 10px 12px;
+        font-size: 0.95rem;
+    }
 }
 
 /* ====== RESPONSIVE MEDIA QUERIES ====== */
